@@ -1,28 +1,34 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 
-interface response {
-  id: number
+export interface articles {
+  source: {id: null | number, name: string}
+  author: string
   title: string
+  description: string
   url: string
-  imageUrl: string
-  summary: string
+  urlToImage: string
   publishedAt: string
-  updatedAt: string
-  featured: boolean
+  content: string
+}
+
+interface response {
+  status: string
+  totalResults: number
+  articles: articles[]
 }
 
 interface IinitialState {
   keywords: string
   isLoading: boolean
-  resultsWithTitle: response[]
-  resultsWithSummary: response[]
+  resultsWithTitle: response | null
+  resultsWithSummary: response | null
 }
 
-export const initState: IinitialState = {
+const initState: IinitialState = {
   keywords: '',
   isLoading: false,
-  resultsWithTitle: [],
-  resultsWithSummary: [],
+  resultsWithTitle: null,
+  resultsWithSummary: null,
 }
 
 const stateSlice = createSlice({
@@ -32,27 +38,12 @@ const stateSlice = createSlice({
     setKeywords(state, action: PayloadAction<string>) {
       state.keywords = action.payload
     },
-    setResultsWithTitle(state, action: PayloadAction<response[]>) {
+    setResultsWithTitle(state, action: PayloadAction<response>) {
       state.resultsWithTitle = action.payload
     },
-    setResultsWithSummary(state, action: PayloadAction<response[]>) {
+    setResultsWithSummary(state, action: PayloadAction<response>) {
       state.resultsWithSummary = action.payload
     },
-    // getCurrentWeather(state, action: PayloadAction<ICurrentWeather>) {
-    //   state.currentWeather = action.payload
-    // },
-    // getFiveDaysForecast(state, action: PayloadAction<IFiveDaysForecast>) {
-    //   state.fiveDaysForecast = action.payload
-    // },
-    // setForecastByDays(state, action: PayloadAction<IListItem[][]>) {
-    //   state.forecastByDays = action.payload
-    // },
-    // setDetailForecast(state, action: PayloadAction<IListItem[]>) {
-    //   state.detailForecast = action.payload
-    // },
-    // setActiveDetail(state, action: PayloadAction<number>) {
-    //   state.selectedDetail = action.payload
-    // },
     setIsLoading(state, action: PayloadAction<boolean>) {
       state.isLoading = action.payload
     },

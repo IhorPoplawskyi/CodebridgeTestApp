@@ -1,9 +1,13 @@
 import { FC } from 'react'
 import { styled } from '@mui/material/styles';
+import ResultsCard from './ResultsCard';
+import { useAppSelector } from '../../redux/store';
 
 const Results: FC = () => {
-  
-  const Results = styled('div')(({theme}) => ({
+  const articlesWithTitles = useAppSelector(state => state.stateSlice.resultsWithTitle?.articles)
+  const articlesWithSummary = useAppSelector(state => state.stateSlice.resultsWithSummary?.articles);
+
+  const Results = styled('div')(({ theme }) => ({
     [theme.breakpoints.up('xs')]: {
       width: '100%',
     },
@@ -22,10 +26,13 @@ const Results: FC = () => {
   }))
   return (
     <>
-      <Results sx={{marginTop: '25px'}}>
-        Results: 
+      <Results sx={{ marginTop: '25px' }}>
+        Results: {articlesWithTitles !== undefined && articlesWithSummary !== undefined ? articlesWithSummary.length + articlesWithTitles.length : 0}
         <div className='line'></div>
-        
+        <div className='cardContainer'>
+          {articlesWithTitles?.map(el => <ResultsCard  {...el}/>)}
+          {/* {articlesWithSummary?.map(el => <ResultsCard  {...el}/>)} */}
+        </div>
       </Results>
     </>
   )

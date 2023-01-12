@@ -1,4 +1,3 @@
-import { styled } from '@mui/material/styles';
 import React, { FC } from 'react'
 import { setKeywords } from '../../redux/stateSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
