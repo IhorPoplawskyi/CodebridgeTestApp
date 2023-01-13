@@ -4,13 +4,13 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 import { Button, CardActions } from '@mui/material';
-import { articles } from '../../redux/stateSlice';
 import calendar from '../../icons/calendar.png'
 import { useAppSelector } from '../../redux/store';
 import parse from 'html-react-parser';
 import { higlight } from "../../helpers/highlight";
+import { response } from "../../redux/stateSlice";
 
-const ResultsCard: React.FC<articles> = ({ urlToImage, publishedAt, title, description }) => {
+const ResultsCard: React.FC<response> = ({ imageUrl, publishedAt, title, summary }) => {
   const keywords = useAppSelector(state => state.stateSlice.keywords)
   const truncate = (str: string) => {
     if (str !== null) {
@@ -23,7 +23,7 @@ const ResultsCard: React.FC<articles> = ({ urlToImage, publishedAt, title, descr
         <CardMedia
           component="img"
           height="140"
-          image={urlToImage}
+          image={imageUrl}
           alt="image"
         />
         <CardContent sx={{flexGrow: 1}}>
@@ -34,7 +34,7 @@ const ResultsCard: React.FC<articles> = ({ urlToImage, publishedAt, title, descr
             <div>{parse(higlight(title, keywords))}</div>
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            {truncate(description)}
+            {truncate(summary)}
           </Typography>
         </CardContent>
       <CardActions>

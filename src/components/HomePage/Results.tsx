@@ -4,8 +4,8 @@ import ResultsCard from './ResultsCard';
 import { useAppSelector } from '../../redux/store';
 
 const Results: FC = () => {
-  const articlesWithTitles = useAppSelector(state => state.stateSlice.resultsWithTitle?.articles)
-  const articlesWithSummary = useAppSelector(state => state.stateSlice.resultsWithSummary?.articles);
+  const articlesWithTitles = useAppSelector(state => state.stateSlice.resultsWithTitle)
+  const articlesWithSummary = useAppSelector(state => state.stateSlice.resultsWithSummary);
 
   const Results = styled('div')(({ theme }) => ({
     [theme.breakpoints.up('xs')]: {
@@ -27,10 +27,10 @@ const Results: FC = () => {
   return (
     <>
       <Results sx={{ marginTop: '25px' }}>
-        Results: {articlesWithTitles !== undefined && articlesWithSummary !== undefined ? articlesWithSummary.length + articlesWithTitles.length : 0}
+        Results:
         <div className='line'></div>
         <div className='cardContainer'>
-          {articlesWithTitles?.map(el => <ResultsCard  {...el}/>)}
+          {articlesWithTitles?.map(el => <ResultsCard key={el.id} {...el}/>)}
           {/* {articlesWithSummary?.map(el => <ResultsCard  {...el}/>)} */}
         </div>
       </Results>

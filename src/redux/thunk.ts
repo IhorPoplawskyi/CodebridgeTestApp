@@ -1,9 +1,9 @@
 import { setIsLoading, setResultsWithSummary, setResultsWithTitle } from "./stateSlice";
 import { AppDispatch } from "./store";
 
-export const getInfoByTitles = (keywords: string) => async (dispatch: AppDispatch) => {
+export const getInfoByTitles = (keywords: string, page: number = 1) => async (dispatch: AppDispatch) => {
     const arrayKeyWords = keywords.split(' ');
-    let callString = 'https://api.spaceflightnewsapi.net/v3/articles?'
+    let callString = `https://api.spaceflightnewsapi.net/v3/articles?_limit=6&_start=${page}&`
     arrayKeyWords.map(el => {
         return callString += `title_contains=${el}&`
     })

@@ -1,34 +1,30 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 
-export interface articles {
-  source: {id: null | number, name: string}
-  author: string
+export interface response {
+  id: number
+  featured: boolean
   title: string
-  description: string
   url: string
-  urlToImage: string
+  imageUrl: string
+  newsSite: string
+  summary: string
   publishedAt: string
-  content: string
-}
-
-interface response {
-  status: string
-  totalResults: number
-  articles: articles[]
 }
 
 interface IinitialState {
   keywords: string
   isLoading: boolean
-  resultsWithTitle: response | null
-  resultsWithSummary: response | null
+  resultsWithTitle: response[]
+  resultsWithSummary: response[]
+  page: number
 }
 
 const initState: IinitialState = {
   keywords: '',
   isLoading: false,
-  resultsWithTitle: null,
-  resultsWithSummary: null,
+  resultsWithTitle: [],
+  resultsWithSummary: [],
+  page: 1
 }
 
 const stateSlice = createSlice({
@@ -38,15 +34,18 @@ const stateSlice = createSlice({
     setKeywords(state, action: PayloadAction<string>) {
       state.keywords = action.payload
     },
-    setResultsWithTitle(state, action: PayloadAction<response>) {
-      state.resultsWithTitle = action.payload
+    setResultsWithTitle(state, action: PayloadAction<response[]>) {
+      state.resultsWithTitle = [...state.resultsWithTitle,...action.payload]
     },
-    setResultsWithSummary(state, action: PayloadAction<response>) {
+    setResultsWithSummary(state, action: PayloadAction<response[]>) {
       state.resultsWithSummary = action.payload
     },
     setIsLoading(state, action: PayloadAction<boolean>) {
       state.isLoading = action.payload
     },
+    setPage(state, action: PayloadAction<number>) {
+      state.page = action.payload
+    }
   }
 })
 
@@ -55,5 +54,6 @@ export const {
   setResultsWithTitle,
   setResultsWithSummary,
   setIsLoading,
+  setPage,
 } = stateSlice.actions
 export default stateSlice.reducer
