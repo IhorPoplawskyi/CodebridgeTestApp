@@ -41,7 +41,7 @@ const ArticlePage: FC = () => {
           <CardActions>
             <Link style={{textDecoration: 'none'}} to={'/home'}>
               <Button sx={{color: 'black'}} size="small">
-              <img style={{marginRight: '3px'}} src={leftArrow}/>
+              <img style={{marginRight: '3px'}} alt='img' src={leftArrow}/>
                 Back to homepage 
               </Button>
             </Link>
