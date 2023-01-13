@@ -5,9 +5,6 @@ This is the react app, where you can:
 - ##### list of articles that contains keywords
 - ##### single article in expanded view
 
-### Demo
-https://codebridgetestapp.herokuapp.com/
-
 ## Technologies used
 
 - #### `TypeScript`
