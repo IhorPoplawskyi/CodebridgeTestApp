@@ -5,6 +5,7 @@ import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 import { Button, CardActions } from '@mui/material';
 import calendar from '../../icons/calendar.png'
+import rightArrow from '../../icons/rightArrow.png'
 import { useAppSelector } from '../../redux/store';
 import parse from 'html-react-parser';
 import { higlight } from "../../helpers/highlight";
@@ -38,6 +39,7 @@ const ResultsCard: React.FC<response> = ({ id, imageUrl, publishedAt, title, sum
         <Link style={{textDecoration: 'none'}} to={`/article/${id}`}>
           <Button size="small" sx={{color: 'black'}}>
             Read more
+            <img style={{marginLeft: '3px'}} src={rightArrow}/>
           </Button>
         </Link>
 

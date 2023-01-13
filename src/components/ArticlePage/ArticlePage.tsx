@@ -10,8 +10,9 @@ import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { Link } from 'react-router-dom';
+import leftArrow from  '../../icons/leftArrow.png'
 
-const ArticalPage: FC = () => {
+const ArticlePage: FC = () => {
   const params = useParams();
   const dispatch = useAppDispatch();
   const article = useAppSelector(state => state.stateSlice.article);
@@ -39,7 +40,10 @@ const ArticalPage: FC = () => {
           </CardContent>
           <CardActions>
             <Link style={{textDecoration: 'none'}} to={'/home'}>
-              <Button sx={{color: 'black'}} size="small">Back to homepage</Button>
+              <Button sx={{color: 'black'}} size="small">
+              <img style={{marginRight: '3px'}} src={leftArrow}/>
+                Back to homepage 
+              </Button>
             </Link>
           </CardActions>
         </Card>
@@ -48,4 +52,4 @@ const ArticalPage: FC = () => {
   )
 }
 
-export default ArticalPage;
+export default ArticlePage;
