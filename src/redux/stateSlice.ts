@@ -14,17 +14,21 @@ export interface response {
 interface IinitialState {
   keywords: string
   isLoading: boolean
-  resultsWithTitle: response[]
-  resultsWithSummary: response[]
+  resultsWithTitle: response[] | null
+  resultsWithSummary: response[] | null
+  mergedResults: response[] | null
   page: number
+  article: response | null
 }
 
 const initState: IinitialState = {
   keywords: '',
   isLoading: false,
-  resultsWithTitle: [],
-  resultsWithSummary: [],
-  page: 1
+  resultsWithTitle: null,
+  resultsWithSummary: null,
+  mergedResults: null,
+  page: 1,
+  article: null,
 }
 
 const stateSlice = createSlice({
@@ -35,17 +39,26 @@ const stateSlice = createSlice({
       state.keywords = action.payload
     },
     setResultsWithTitle(state, action: PayloadAction<response[]>) {
-      state.resultsWithTitle = [...state.resultsWithTitle,...action.payload]
+      state.resultsWithTitle = action.payload
     },
     setResultsWithSummary(state, action: PayloadAction<response[]>) {
       state.resultsWithSummary = action.payload
+    },
+    setArticle(state, action: PayloadAction<response>) {
+      state.article = action.payload
     },
     setIsLoading(state, action: PayloadAction<boolean>) {
       state.isLoading = action.payload
     },
     setPage(state, action: PayloadAction<number>) {
       state.page = action.payload
-    }
+    },
+    mergeResults(state, action: PayloadAction<response[]>) {
+      state.mergedResults = [...state.mergedResults!,...action.payload].filter((el,index,array)=>array.findIndex(el2=>(el2.id===el.id))===index)
+    },
+    resetResults(state) {
+      state.mergedResults = []
+    },
   }
 })
 
@@ -55,5 +68,8 @@ export const {
   setResultsWithSummary,
   setIsLoading,
   setPage,
+  mergeResults,
+  resetResults,
+  setArticle,
 } = stateSlice.actions
 export default stateSlice.reducer

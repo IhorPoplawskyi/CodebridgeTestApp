@@ -4,8 +4,9 @@ import ResultsCard from './ResultsCard';
 import { useAppSelector } from '../../redux/store';
 
 const Results: FC = () => {
-  const articlesWithTitles = useAppSelector(state => state.stateSlice.resultsWithTitle)
-  const articlesWithSummary = useAppSelector(state => state.stateSlice.resultsWithSummary);
+  const mergedResults = useAppSelector(state => state.stateSlice.mergedResults);
+  const page = useAppSelector(state => state.stateSlice.page);
+  let mergedResultsSlice = mergedResults!.slice(0, page * 6)
 
   const Results = styled('div')(({ theme }) => ({
     [theme.breakpoints.up('xs')]: {
@@ -27,11 +28,10 @@ const Results: FC = () => {
   return (
     <>
       <Results sx={{ marginTop: '25px' }}>
-        Results:
+        Results: {mergedResults!.length}
         <div className='line'></div>
         <div className='cardContainer'>
-          {articlesWithTitles?.map(el => <ResultsCard key={el.id} {...el}/>)}
-          {/* {articlesWithSummary?.map(el => <ResultsCard  {...el}/>)} */}
+          {mergedResultsSlice.map(el => <ResultsCard key={el.id} {...el}/>)}
         </div>
       </Results>
     </>

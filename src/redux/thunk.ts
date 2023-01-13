@@ -1,9 +1,9 @@
-import { setIsLoading, setResultsWithSummary, setResultsWithTitle } from "./stateSlice";
+import { setArticle, setIsLoading, setResultsWithSummary, setResultsWithTitle } from "./stateSlice";
 import { AppDispatch } from "./store";
 
-export const getInfoByTitles = (keywords: string, page: number = 1) => async (dispatch: AppDispatch) => {
+export const getInfoByTitles = (keywords: string) => async (dispatch: AppDispatch) => {
     const arrayKeyWords = keywords.split(' ');
-    let callString = `https://api.spaceflightnewsapi.net/v3/articles?_limit=6&_start=${page}&`
+    let callString = `https://api.spaceflightnewsapi.net/v3/articles?_limit=1000&`
     arrayKeyWords.map(el => {
         return callString += `title_contains=${el}&`
     })
@@ -19,13 +19,31 @@ export const getInfoByTitles = (keywords: string, page: number = 1) => async (di
 }
 
 export const getInfoBySummary = (keywords: string) => async (dispatch: AppDispatch) => {
-  try {
-      dispatch(setIsLoading(true))
-      const response = await fetch(`https://newsapi.org/v2/everything?q=${keywords}&pageSize=6&apiKey=53fa8ff7cf6e46e7b1e6fa26cbc30f3b`)
-      const data = await response.json();
-      dispatch(setResultsWithSummary(data))
-      dispatch(setIsLoading(false))
-  } catch (e) {
-      console.log(e)
-  }
+    const arrayKeyWords = keywords.split(' ');
+    let callString = `https://api.spaceflightnewsapi.net/v3/articles?_limit=1000&`
+    arrayKeyWords.map(el => {
+        return callString += `summary_contains=${el}&`
+    })
+    try {
+        dispatch(setIsLoading(true))
+        const response = await fetch(callString)
+        const data = await response.json();
+        dispatch(setResultsWithSummary(data))
+        dispatch(setIsLoading(false))
+    } catch (e) {
+        console.log(e)
+    }
+}
+
+export const getArticle = (id: string) => async (dispatch: AppDispatch) => {
+    let callString = `https://api.spaceflightnewsapi.net/v3/articles/${id}`
+    try {
+        dispatch(setIsLoading(true))
+        const response = await fetch(callString)
+        const data = await response.json();
+        dispatch(setArticle(data))
+        dispatch(setIsLoading(false))
+    } catch (e) {
+        console.log(e)
+    }
 }
