@@ -1,10 +1,10 @@
-import CircularProgress from '@mui/material/CircularProgress';
-import Box from '@mui/material/Box';
+import { FC } from 'react'
+import MuiBox from "@mui/material/Box";
+import MuiCircularProgress from "@mui/material/CircularProgress";
 
-export default function Preloader() {
-  return (
-    <Box sx={{ position: 'absolute', left: '50%', top: '20%' }}>
-      <CircularProgress />
-    </Box>
-  );
-}
+export const Preloader: FC = (): JSX.Element => (
+    <MuiBox sx={{ position: "absolute", left: "50%", top: "20%" }}>
+      <MuiCircularProgress />
+    </MuiBox>
+);
+

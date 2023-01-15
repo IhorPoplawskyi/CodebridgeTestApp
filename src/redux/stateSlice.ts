@@ -1,75 +1,79 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit"
+import { IArticle } from "../types";
 
-export interface response {
-  id: number
-  featured: boolean
-  title: string
-  url: string
-  imageUrl: string
-  newsSite: string
-  summary: string
-  publishedAt: string
-}
+import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 
 interface IinitialState {
   keywords: string
   isLoading: boolean
-  resultsWithTitle: response[] | null
-  resultsWithSummary: response[] | null
-  mergedResults: response[] | null
+
   page: number
-  article: response | null
+  limit: number
+  currentPriority: string
+
+  articles: IArticle[] | null
+  article: IArticle | null
 }
 
-const initState: IinitialState = {
-  keywords: '',
+const initialState: IinitialState = {
+  keywords: "",
+  currentPriority: '',
   isLoading: false,
-  resultsWithTitle: null,
-  resultsWithSummary: null,
-  mergedResults: null,
   page: 1,
+  limit: 6,
+  articles: null,
   article: null,
-}
+};
+
+const fetchArticles = createAsyncThunk(
+  "stateSlice/fetchArticles",
+  async (keywords: string, { dispatch }) => {
+    
+    // articlesAPI.getList(keywords, currentPriority);
+    // call new func
+    // return data;
+    // const response = await userAPI.fetchById(userId);
+    // return response.data;
+  }
+);
 
 const stateSlice = createSlice({
-  name: 'stateSlice',
-  initialState: initState,
+  name: "stateSlice",
+  initialState,
   reducers: {
     setKeywords(state, action: PayloadAction<string>) {
-      state.keywords = action.payload
+      state.keywords = action.payload;
+      state.articles = [];
     },
-    setResultsWithTitle(state, action: PayloadAction<response[]>) {
-      state.resultsWithTitle = action.payload
+    setArticles(state, action: PayloadAction<IArticle[]>) {
+      state.articles = [...state.articles!, ...action.payload]
     },
-    setResultsWithSummary(state, action: PayloadAction<response[]>) {
-      state.resultsWithSummary = action.payload
-    },
-    setArticle(state, action: PayloadAction<response>) {
-      state.article = action.payload
+    setArticle(state, action: PayloadAction<IArticle>) {
+      state.article = action.payload;
     },
     setIsLoading(state, action: PayloadAction<boolean>) {
-      state.isLoading = action.payload
+      state.isLoading = action.payload;
     },
     setPage(state, action: PayloadAction<number>) {
-      state.page = action.payload
+      state.page = action.payload;
     },
-    mergeResults(state, action: PayloadAction<response[]>) {
-      state.mergedResults = [...state.mergedResults!,...action.payload].filter((el,index,array)=>array.findIndex(el2=>(el2.id===el.id))===index)
-    },
-    resetResults(state) {
-      state.mergedResults = []
-    },
+  },
+  extraReducers: ( builder ) => {
+    builder.addCase(fetchArticles.pending, (state) => {
+      state.isLoading = true;
+    });
+    builder.addCase(fetchArticles.fulfilled, (state) => {
+      state.isLoading = false;
+    });
+    builder.addCase(fetchArticles.rejected, (state) => {
+      state.isLoading = false;
+    });
   }
-})
+});
 
 export const {
   setKeywords,
-  setResultsWithTitle,
-  setResultsWithSummary,
   setIsLoading,
   setPage,
-  mergeResults,
-  resetResults,
   setArticle,
-} = stateSlice.actions
-export default stateSlice.reducer
+} = stateSlice.actions;
+export default stateSlice.reducer;
