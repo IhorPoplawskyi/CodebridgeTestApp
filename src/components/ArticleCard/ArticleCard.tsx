@@ -33,7 +33,7 @@ export const ArticleCard: FC<ArticleCardProps> = ({ item: {
 
   return (
     <MuiCard className={styles.wrapper}>
-      <MuiCardMedia component="img" height="140" image={imageUrl} alt="image" />
+      <MuiCardMedia component="img" height="140" image={imageUrl} alt="img" />
       <MuiCardContent sx={{ flexGrow: 1 }}>
         <MuiTypography
           gutterBottom

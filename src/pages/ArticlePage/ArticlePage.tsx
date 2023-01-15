@@ -9,7 +9,7 @@ import MuiTypography from "@mui/material/Typography";
 import MuiCardActions from "@mui/material/CardActions";
 import MuiCardContent from "@mui/material/CardContent";
 
-import { fetchArticle } from "../../redux";
+import { fetchArticle } from "../../redux/thunks";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 
 import leftArrow from "./leftArrow.png";

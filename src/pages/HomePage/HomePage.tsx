@@ -2,11 +2,11 @@ import { FC, useCallback } from "react";
 import MuiContainer from "@mui/material/Container";
 
 import {
-  fetchArticles,
   setPage,
   setSearchTerm,
-  fetchTotalCount,
 } from "../../redux/stateSlice";
+import { fetchArticles, fetchTotalCount } from "../../redux/thunks";
+
 import { useAppDispatch, useAppSelector } from "../../redux";
 
 import { LoadMore, Preloader, Results, SearchBar, ArticleCard } from '../../components';
@@ -21,13 +21,14 @@ export const HomePage: FC = (): JSX.Element => {;
   const totalCount = useAppSelector((state) => state.stateSlice.totalCount);
   const page = useAppSelector((state) => state.stateSlice.page);
   const status = useAppSelector((state) => state.stateSlice.status);
+  const currentResponse = useAppSelector((state) => state.stateSlice.currentResponse)
 
   const onSearchHandler = useCallback((value: string): void => {
     if (value && value === searchTerm) return;
     dispatch(setSearchTerm(value));
     dispatch(fetchTotalCount());
     dispatch(fetchArticles());
-  }, [dispatch]);
+  }, [dispatch, searchTerm]);
 
   const loadMoreArticles = () => {
     dispatch(setPage(page + 1));
@@ -55,7 +56,7 @@ export const HomePage: FC = (): JSX.Element => {;
       )}
 
       <div style={{ display: "flex", justifyContent: "center" }}>
-        {showLoadMore && (
+        {showLoadMore !== 0 && currentResponse.length !== 0 && (
           <LoadMore onClick={loadMoreArticles} className={styles.loadMore} />
         )}
       </div>

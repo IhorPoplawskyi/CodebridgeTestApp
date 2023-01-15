@@ -1,10 +1,8 @@
-import _sum from 'lodash/sum';
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { IArticle } from '../types';
-import { RootState } from './store'
-import ArticlesAPI from '../api/articles.api';
-import { filtersByPriority } from '../constants';
+import { fetchArticle, fetchArticles, fetchTotalCount } from "./thunks";
+
 
 interface IArticlesState {
   searchTerm: string;
@@ -15,6 +13,7 @@ interface IArticlesState {
   page: number;
   limit: number;
   activeArticle: IArticle | null;
+  currentResponse:  IArticle[];
 }
 
 const initState: IArticlesState = {
@@ -26,51 +25,9 @@ const initState: IArticlesState = {
   page: 0,
   limit: 6,
   activeArticle: null,
+  currentResponse: [],
 };
 
-export const fetchArticle = createAsyncThunk(
-  "stateSlice/fetchArticle",
-  async (id: string): Promise<IArticle> => {
-    const article = ArticlesAPI.getItem(id)
-    return article;
-  }
-)
-
-export const fetchTotalCount = createAsyncThunk(
-  "stateSlice/fetchTotalCount",
-  async (_args, thunkAPI): Promise<number> => {
-    const state = thunkAPI.getState() as RootState;
-    const keywords =  state.stateSlice.searchTerm;
-
-    const counts = await Promise.all(filtersByPriority
-      .map(filter => ArticlesAPI.getTotalCount(filter, keywords)));
-    
-    return _sum(counts);
-});
-
-export const fetchArticles = createAsyncThunk(
-  "stateSlice/fetchArticles",
-  async (_args, thunkAPI): Promise<IArticle[]> => {
-    const state = thunkAPI.getState() as RootState;
-    const { searchTerm, currentPriority, page, limit } = state.stateSlice;
-
-    const newArticles = await ArticlesAPI.getList(currentPriority, searchTerm, {
-      page,
-      limit,
-    });
-
-    if (newArticles && newArticles.length < limit + 1) {
-      thunkAPI.dispatch(setCurrentPriority())
-      thunkAPI.dispatch(setPage(0))
-    }
-
-    // TODO: add check
-    // Netflix (7, 5 / 2)
-
-    // newArticles.length < limit + 1 
-
-    return newArticles;
-  });
 
 const stateSlice = createSlice({
   name: "stateSlice",
@@ -80,6 +37,7 @@ const stateSlice = createSlice({
       state.searchTerm = action.payload;
       state.articles = [];
       state.currentPriority = "title_contains";
+      state.page = 0;
     },
     setArticle(state, action: PayloadAction<IArticle>) {
       state.activeArticle = action.payload;
@@ -90,6 +48,9 @@ const stateSlice = createSlice({
     setCurrentPriority(state) {
       state.currentPriority = 'summary_contains'
     },
+    setCurrentResponse(state, action: PayloadAction<IArticle[]>) {
+      state.currentResponse = action.payload
+    }
   },
     extraReducers: (builder) => {
       builder.addCase(fetchTotalCount.fulfilled, (state, action) => {
@@ -122,7 +83,8 @@ export const {
   setSearchTerm,
   setPage,
   setArticle,
-  setCurrentPriority
+  setCurrentPriority,
+  setCurrentResponse,
 } = stateSlice.actions;
 
 export default stateSlice.reducer;
