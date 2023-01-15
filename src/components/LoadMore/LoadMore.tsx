@@ -1,25 +1,21 @@
-import { FC } from "react";
+import { FC } from 'react';
+import cn from 'classnames';
+
 import MuiButton from "@mui/material/Button";
 
-// import { setPage } from "../../redux/stateSlice";
-// import { useAppDispatch, useAppSelector } from "../../redux/store";
+import styles from './LoadMore.module.scss';
 
-interface ILoadMoreProps {
-  onClick?: () => void;
+interface LoadMoreProps {
+  onClick: () => void;
+  className?: string;
 }
 
-export const LoadMore: FC<ILoadMoreProps> = ({ onClick }): JSX.Element => {
-  // const dispatch = useAppDispatch();
-  // const page = useAppSelector((state) => state.stateSlice.page);
-
-  return (
+export const LoadMore: FC<LoadMoreProps> = ({ onClick, className }): JSX.Element => (
     <MuiButton
-      sx={{ marginBottom: "15px" }}
-      // onClick={() => dispatch(setPage(page + 1))}
-      onClick={onClick}
+      className={cn(styles.loadMore, className)}
       variant="outlined"
+      onClick={onClick}
     >
       Load More
     </MuiButton>
   );
-};

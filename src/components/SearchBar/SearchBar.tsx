@@ -1,44 +1,41 @@
-import React, { FC } from "react";
+import { FC, ChangeEvent, useState, useEffect } from "react";
+import cn from 'classnames';
 
-import MuiTextField from '@mui/material/TextField';
+import useDebounce from '../../hooks/useDebounce';
 
-import { setKeywords } from "../../redux/stateSlice";
-import { useAppDispatch, useAppSelector } from "../../redux/store";
+import styles from './SearchBar.module.scss';
 
-interface ISearchBarProps {
-  searchString?: string;
-  onChange?: (searchString: string) => void;
+interface SearchBarProps {
+  label: string;
+  onSearch: (searchTerm: string) => void;
+  className?: string;
+  value?: string;
 }
 
-const StyledSearchBar = {
-  marginTop: '20px',
-  width: '40%',
-  border: '1px solid rgb(219, 216, 216)',
-  borderRadius: '3px',
-}
+export const SearchBar: FC<SearchBarProps> = ({value = '',  className = '', label, onSearch }): JSX.Element => {
+  const [searchTerm, setSearchTerm] = useState(value);
+  const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
-export const SearchBar: FC<ISearchBarProps> = () => {
-  
- 
-  const dispatch = useAppDispatch();
-  const keywords = useAppSelector((state) => state.stateSlice.keywords);
+  useEffect(() => {
+    onSearch(debouncedSearchTerm);
+  }, [debouncedSearchTerm, onSearch]);
 
-  // <TextField / > + keywords as a prop
-
-  const onChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
-    // use useDebounce here, then call onChange prop
-
-    dispatch(setKeywords(event.target.value));
-  };
-
+  const onChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
+    const nextSearchTerm = event.target.value;
+    if (nextSearchTerm === searchTerm) return;
+    setSearchTerm(nextSearchTerm);
+  }
 
   return (
-    <MuiTextField sx={StyledSearchBar}
-      label="Filter by keywords"
-      type="search"
-      variant="standard"
-    />
+    <div className={cn(styles.searchBar, className)}>
+      <label htmlFor="searchBar">{label}</label>
+      <input
+        value={searchTerm}
+        onChange={onChangeHandler}
+        id="searchBar"
+        type="text"
+        placeholder="Enter keywords"
+      />
+    </div>
   );
 };
-
-

@@ -8,3 +8,12 @@ export interface IArticle {
   summary: string;
   publishedAt: string;
 }
+
+export interface IPaginationOptions {
+  limit: number;
+  page: number;
+}
+
+export type Status = "init" | "loading" | "success" | "error";
+
+export type CurrentPriority = "title_contains" | "summary_contains";

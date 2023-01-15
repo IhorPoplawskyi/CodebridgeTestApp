@@ -1,7 +1,33 @@
-export const apiUrl = "https://api.spaceflightnewsapi.net/v3/articles";
+import qs from 'qs';
 
-// export const getList = async ({ keywords, param }) => {
-//       const response = await fetch(apiUrl + helperFunc(keywords, param));
-//       const data = await response.json();
-//       return data;
-// }
+import { endpoints } from '../constants';
+import { IArticle, IPaginationOptions } from '../types';
+
+export const getList = async (filterBy: string, searchTerm: string, { page, limit }: IPaginationOptions): Promise<IArticle[]> => {
+    const query = qs.stringify({
+        [filterBy]: searchTerm.split(' '),
+        _limit: limit,
+        _start: page * limit
+    });
+
+    const response = await fetch(`${endpoints.articles}?${query}`);
+    return response.json();
+}
+
+export const getTotalCount = async (filterBy: string, searchTerm: string): Promise<number> => {
+    const query = qs.stringify({ [filterBy]: searchTerm.split(' ') });
+
+    const response = await fetch(`${endpoints.articles}/count?${query}`);
+    return response.json();
+}
+
+export const getItem = async (id: string): Promise<IArticle> => {
+    const response = await fetch(`${endpoints.articles}/${id}`)
+    return response.json();
+}
+
+export default {
+    getList,
+    getTotalCount,
+    getItem,
+}

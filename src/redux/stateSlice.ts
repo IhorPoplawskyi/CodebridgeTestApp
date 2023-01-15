@@ -1,79 +1,128 @@
-import { IArticle } from "../types";
+import _sum from 'lodash/sum';
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
+import { IArticle } from '../types';
+import { RootState } from './store'
+import ArticlesAPI from '../api/articles.api';
+import { filtersByPriority } from '../constants';
 
-interface IinitialState {
-  keywords: string
-  isLoading: boolean
-
-  page: number
-  limit: number
-  currentPriority: string
-
-  articles: IArticle[] | null
-  article: IArticle | null
+interface IArticlesState {
+  searchTerm: string;
+  status: 'init' | 'loading' | 'success' | 'error';
+  currentPriority: "title_contains" | "summary_contains";
+  articles: IArticle[];
+  totalCount: number | null;
+  page: number;
+  limit: number;
+  activeArticle: IArticle | null;
 }
 
-const initialState: IinitialState = {
-  keywords: "",
-  currentPriority: '',
-  isLoading: false,
-  page: 1,
+const initState: IArticlesState = {
+  searchTerm: "",
+  status: 'init',
+  currentPriority: "title_contains",
+  articles: [],
+  totalCount: null,
+  page: 0,
   limit: 6,
-  articles: null,
-  article: null,
+  activeArticle: null,
 };
 
-const fetchArticles = createAsyncThunk(
-  "stateSlice/fetchArticles",
-  async (keywords: string, { dispatch }) => {
-    
-    // articlesAPI.getList(keywords, currentPriority);
-    // call new func
-    // return data;
-    // const response = await userAPI.fetchById(userId);
-    // return response.data;
+export const fetchArticle = createAsyncThunk(
+  "stateSlice/fetchArticle",
+  async (id: string): Promise<IArticle> => {
+    const article = ArticlesAPI.getItem(id)
+    return article;
   }
-);
+)
+
+export const fetchTotalCount = createAsyncThunk(
+  "stateSlice/fetchTotalCount",
+  async (_args, thunkAPI): Promise<number> => {
+    const state = thunkAPI.getState() as RootState;
+    const keywords =  state.stateSlice.searchTerm;
+
+    const counts = await Promise.all(filtersByPriority
+      .map(filter => ArticlesAPI.getTotalCount(filter, keywords)));
+    
+    return _sum(counts);
+});
+
+export const fetchArticles = createAsyncThunk(
+  "stateSlice/fetchArticles",
+  async (_args, thunkAPI): Promise<IArticle[]> => {
+    const state = thunkAPI.getState() as RootState;
+    const { searchTerm, currentPriority, page, limit } = state.stateSlice;
+
+    const newArticles = await ArticlesAPI.getList(currentPriority, searchTerm, {
+      page,
+      limit,
+    });
+
+    if (newArticles && newArticles.length < limit + 1) {
+      thunkAPI.dispatch(setCurrentPriority())
+      thunkAPI.dispatch(setPage(0))
+    }
+
+    // TODO: add check
+    // Netflix (7, 5 / 2)
+
+    // newArticles.length < limit + 1 
+
+    return newArticles;
+  });
 
 const stateSlice = createSlice({
   name: "stateSlice",
-  initialState,
+  initialState: initState,
   reducers: {
-    setKeywords(state, action: PayloadAction<string>) {
-      state.keywords = action.payload;
+    setSearchTerm(state, action: PayloadAction<string>) {
+      state.searchTerm = action.payload;
       state.articles = [];
-    },
-    setArticles(state, action: PayloadAction<IArticle[]>) {
-      state.articles = [...state.articles!, ...action.payload]
+      state.currentPriority = "title_contains";
     },
     setArticle(state, action: PayloadAction<IArticle>) {
-      state.article = action.payload;
-    },
-    setIsLoading(state, action: PayloadAction<boolean>) {
-      state.isLoading = action.payload;
+      state.activeArticle = action.payload;
     },
     setPage(state, action: PayloadAction<number>) {
       state.page = action.payload;
     },
+    setCurrentPriority(state) {
+      state.currentPriority = 'summary_contains'
+    },
   },
-  extraReducers: ( builder ) => {
-    builder.addCase(fetchArticles.pending, (state) => {
-      state.isLoading = true;
-    });
-    builder.addCase(fetchArticles.fulfilled, (state) => {
-      state.isLoading = false;
-    });
-    builder.addCase(fetchArticles.rejected, (state) => {
-      state.isLoading = false;
-    });
-  }
+    extraReducers: (builder) => {
+      builder.addCase(fetchTotalCount.fulfilled, (state, action) => {
+        state.totalCount = action.payload;
+      });
+      builder.addCase(fetchArticles.fulfilled, (state, action) => {
+        state.articles = [...state.articles, ...action.payload];
+        state.status = 'success';
+      });
+      builder.addCase(fetchArticles.rejected, (state) => {
+        state.status = 'error';
+      });
+      builder.addCase(fetchArticles.pending, (state) => {
+        state.status = 'loading';
+      });
+      builder.addCase(fetchArticle.fulfilled, (state, action) => {
+        state.activeArticle = action.payload;
+        state.status = 'success';
+      });
+      builder.addCase(fetchArticle.rejected, (state) => {
+        state.status = 'error';
+      });
+      builder.addCase(fetchArticle.pending, (state) => {
+        state.status = 'loading';
+      });
+  },
 });
 
 export const {
-  setKeywords,
-  setIsLoading,
+  setSearchTerm,
   setPage,
   setArticle,
+  setCurrentPriority
 } = stateSlice.actions;
+
 export default stateSlice.reducer;

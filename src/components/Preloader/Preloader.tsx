@@ -1,10 +1,17 @@
-import { FC } from 'react'
+import { FC } from 'react';
+import cn from 'classnames';
+
 import MuiBox from "@mui/material/Box";
 import MuiCircularProgress from "@mui/material/CircularProgress";
 
-export const Preloader: FC = (): JSX.Element => (
-    <MuiBox sx={{ position: "absolute", left: "50%", top: "20%" }}>
-      <MuiCircularProgress />
-    </MuiBox>
-);
+import styles from './Preloader.module.scss';
 
+interface PreloaderProps {
+  className?: string;
+}
+
+export const Preloader: FC<PreloaderProps> = ({ className }): JSX.Element => (
+  <MuiBox className={cn(styles.box, className)}>
+    <MuiCircularProgress />
+  </MuiBox>
+);

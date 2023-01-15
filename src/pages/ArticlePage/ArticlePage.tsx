@@ -1,5 +1,5 @@
 import { FC, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 
 import MuiCard from "@mui/material/Card";
 import MuiButton from "@mui/material/Button";
@@ -9,58 +9,26 @@ import MuiTypography from "@mui/material/Typography";
 import MuiCardActions from "@mui/material/CardActions";
 import MuiCardContent from "@mui/material/CardContent";
 
-import { getArticle } from "../../redux/thunk";
+import { fetchArticle } from "../../redux";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 
-import styles from "./ArticlePage.module.scss";
-import leftArrow from "../../icons/leftArrow.png";
+import leftArrow from "./leftArrow.png";
+import styles from './ArticlePage.module.scss';
 
 export const ArticlePage: FC = (): JSX.Element => {
   const params = useParams();
   const dispatch = useAppDispatch();
-
-  const article = useAppSelector((state) => state.stateSlice.article);
-
+  
+  const article = useAppSelector((state) => state.stateSlice.activeArticle);
   useEffect(() => {
-    if (!params.id) return;
-    dispatch(getArticle(params.id));
-  }, [params.id]);
+    dispatch(fetchArticle(params.id!));
+  }, []);
 
   return (
-      <MuiContainer
-        sx={{
-          position: "relative",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          background: "#FFFFFF",
-          width: "80vw",
-          minHeight: "100vh",
-          borderRadius: "5px 5px 0px 0px",
-          padding: { xs: "0", sm: "0", md: "0", lg: "0", xl: "0" },
-        }}
-      >
-        <MuiCardMedia
-          sx={{ width: "100%", borderRadius: "5px 5px 0px 0px" }}
-          component="img"
-          alt="image"
-          height="245"
-          image={article?.imageUrl}
-        />
-        <MuiCard
-          sx={{
-            width: { xs: "100%", sm: "100%", md: "90%", lg: "90%", xl: "90%" },
-            position: "absolute",
-            top: "140px",
-          }}
-        >
-          <MuiCardContent
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-            }}
-          >
+      <MuiContainer className={styles.page}>
+        <MuiCardMedia className={styles.cardMedia} component="img" alt="image" height="245" image={article?.imageUrl}/>
+        <MuiCard className={styles.cardPosition}>
+          <MuiCardContent className={styles.cardContent}>
             <MuiTypography gutterBottom variant="h5" component="div">
               {article?.title}
             </MuiTypography>
@@ -80,4 +48,3 @@ export const ArticlePage: FC = (): JSX.Element => {
       </MuiContainer>
   );
 };
-

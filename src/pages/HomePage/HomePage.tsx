@@ -1,63 +1,66 @@
-import { Container } from "@mui/material";
-import { FC, useEffect } from "react";
+import { FC, useCallback } from "react";
+import MuiContainer from "@mui/material/Container";
 
-import useDebounce from "../../hooks/useDebounce";
+import {
+  fetchArticles,
+  setPage,
+  setSearchTerm,
+  fetchTotalCount,
+} from "../../redux/stateSlice";
+import { useAppDispatch, useAppSelector } from "../../redux";
 
-// index.ts from ./redux, rename to "store"
-import { useAppDispatch, useAppSelector } from "../../redux/store";
+import { LoadMore, Preloader, Results, SearchBar, ArticleCard } from '../../components';
 
-import { Preloader, LoadMore, Results, SearchBar } from "../../components";
+import styles from "./HomePage.module.scss";
 
-import "./HomePage.module.scss";
-
-export const HomePage: FC = () => {
+export const HomePage: FC = (): JSX.Element => {;
   const dispatch = useAppDispatch();
 
-  const keywords = useAppSelector((state) => state.stateSlice.keywords);
-  const page = useAppSelector((state) => state.stateSlice.page);
+  const searchTerm = useAppSelector((state) => state.stateSlice.searchTerm);
   const articles = useAppSelector((state) => state.stateSlice.articles);
-  const isLoading = useAppSelector((state) => state.stateSlice.isLoading);
-  
-  // const debouncedSearchTerm = useDebounce(keywords, 1000);
+  const totalCount = useAppSelector((state) => state.stateSlice.totalCount);
+  const page = useAppSelector((state) => state.stateSlice.page);
+  const status = useAppSelector((state) => state.stateSlice.status);
 
-  // useEffect(() => {
-  //   if (!debouncedSearchTerm) return;
+  const onSearchHandler = useCallback((value: string): void => {
+    if (value && value === searchTerm) return;
+    dispatch(setSearchTerm(value));
+    dispatch(fetchTotalCount());
+    dispatch(fetchArticles());
+  }, [dispatch]);
 
-  //   dispatch(resetResults());
-  //   dispatch(getInfoByTitles(debouncedSearchTerm));
-  //   dispatch(getInfoBySummary(debouncedSearchTerm));
-  // }, [debouncedSearchTerm]);
-
-  const onChangeHandler = (searchString: string) => {
-    if (!searchString.length) {
-      //   dispatch(resetResults());
-    } else {
-      // dispatch (SetKeywords);
-      // dispatch (fetchArticles);
-      // createAsyncThunk === http call
-    }
+  const loadMoreArticles = () => {
+    dispatch(setPage(page + 1));
+    dispatch(fetchArticles());
   }
 
-  // a) change keywords => reset, + call (length)
-  // b) load more => call, ++results
-
-
+  const showLoadMore = totalCount && totalCount > articles.length;
 
   return (
-    <Container
-      sx={{
-        background: "#FFFFFF",
-        width: "80vw",
-        minHeight: "100vh",
-        borderTop: "1px solid transparent",
-      }}
-    >
-      <SearchBar onChange={onChangeHandler} />
-      {isLoading && <Preloader />}
-      {articles && <Results />}
+    <MuiContainer className={styles.wrapper}>
+      <SearchBar
+        value={searchTerm}
+        label="Filter by keywords"
+        onSearch={onSearchHandler}
+      />
+
+      <Results totalCount={totalCount} className={styles.results} />
+
+      {articles && (
+        <div className={styles.cardContainer}>
+          {articles.map((el) => (
+            <ArticleCard key={el.id} item={el} searchTerm={searchTerm} />
+          ))}
+        </div>
+      )}
+
       <div style={{ display: "flex", justifyContent: "center" }}>
-        <LoadMore />
+        {showLoadMore && (
+          <LoadMore onClick={loadMoreArticles} className={styles.loadMore} />
+        )}
       </div>
-    </Container>
+
+      {status === 'loading' ? <Preloader className={styles.preloader} /> : null}
+    </MuiContainer>
   );
 };

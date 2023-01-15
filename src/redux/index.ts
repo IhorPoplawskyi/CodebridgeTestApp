@@ -1,3 +1,2 @@
-export * from './stateSlice'
-export * from './store'
-export * from './thunk'
+export * from './store';
+export * from './stateSlice';
