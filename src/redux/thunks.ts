@@ -3,7 +3,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import ArticlesAPI from '../api/articles.api';
 import { IArticle } from "../types";
 import { RootState } from "./store";
-import { setCurrentPriority, setCurrentResponse,setPage } from './stateSlice';
+import { setCurrentPriority,setPage } from './stateSlice';
 import { filtersByPriority } from '../constants';
 
 export const fetchArticle = createAsyncThunk(
@@ -36,7 +36,6 @@ export const fetchArticles = createAsyncThunk(
       page,
       limit,
     });
-    thunkAPI.dispatch(setCurrentResponse(newArticles))
 
     if (newArticles.length < limit && currentPriority === 'title_contains') {
       thunkAPI.dispatch(setCurrentPriority())

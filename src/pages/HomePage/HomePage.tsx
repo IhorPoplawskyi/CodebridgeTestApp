@@ -21,7 +21,6 @@ export const HomePage: FC = (): JSX.Element => {;
   const totalCount = useAppSelector((state) => state.stateSlice.totalCount);
   const page = useAppSelector((state) => state.stateSlice.page);
   const status = useAppSelector((state) => state.stateSlice.status);
-  const currentResponse = useAppSelector((state) => state.stateSlice.currentResponse)
 
   const onSearchHandler = useCallback((value: string): void => {
     if (value && value === searchTerm) return;
@@ -35,7 +34,7 @@ export const HomePage: FC = (): JSX.Element => {;
     dispatch(fetchArticles());
   }
 
-  const showLoadMore = totalCount && totalCount > articles.length;
+  const showLoadMore = totalCount && totalCount === articles.length;
 
   return (
     <MuiContainer className={styles.wrapper}>
@@ -56,7 +55,7 @@ export const HomePage: FC = (): JSX.Element => {;
       )}
 
       <div style={{ display: "flex", justifyContent: "center" }}>
-        {showLoadMore !== 0 && currentResponse.length !== 0 && (
+        {!showLoadMore && (
           <LoadMore onClick={loadMoreArticles} className={styles.loadMore} />
         )}
       </div>

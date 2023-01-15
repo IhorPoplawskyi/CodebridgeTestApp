@@ -13,7 +13,6 @@ interface IArticlesState {
   page: number;
   limit: number;
   activeArticle: IArticle | null;
-  currentResponse:  IArticle[];
 }
 
 const initState: IArticlesState = {
@@ -25,7 +24,6 @@ const initState: IArticlesState = {
   page: 0,
   limit: 6,
   activeArticle: null,
-  currentResponse: [],
 };
 
 
@@ -48,9 +46,6 @@ const stateSlice = createSlice({
     setCurrentPriority(state) {
       state.currentPriority = 'summary_contains'
     },
-    setCurrentResponse(state, action: PayloadAction<IArticle[]>) {
-      state.currentResponse = action.payload
-    }
   },
     extraReducers: (builder) => {
       builder.addCase(fetchTotalCount.fulfilled, (state, action) => {
@@ -84,7 +79,6 @@ export const {
   setPage,
   setArticle,
   setCurrentPriority,
-  setCurrentResponse,
 } = stateSlice.actions;
 
 export default stateSlice.reducer;
