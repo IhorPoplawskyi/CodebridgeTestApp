@@ -1,4 +1,4 @@
-# Test app Codebridge
+# News App
 
 This is the react app, where you can:
 - ##### put keywords to input to search articles that contains this keywords
